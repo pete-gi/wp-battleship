@@ -2,8 +2,8 @@ export type StorageItem = string | number | Record<string, any> | any[];
 
 export default interface StoragePlugin {
   keys: string[];
-  get: (key: string) => StorageItem | null;
-  set: (key: string, value: StorageItem) => void;
+  get: (key: string) => StorageItem | StorageItem[] | null;
+  set: (key: string, value: StorageItem | StorageItem[]) => void;
   delete: (key: string) => void;
   clear: () => void;
 

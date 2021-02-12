@@ -2,7 +2,9 @@
   <div class="menu">
     <form>
       <div class="range-field">
-        <label for="size"> Rozmiar planszy: {{ size }} </label>
+        <label for="size">
+          Rozmiar planszy: <b>{{ size }}</b>
+        </label>
         <input
           type="range"
           id="size"
@@ -13,7 +15,9 @@
         />
       </div>
       <div class="range-field">
-        <label for="hitsCount"> Liczba ruchów: {{ hitsCount }} </label>
+        <label for="hitsCount">
+          Liczba ruchów: <b>{{ hitsCount }}</b>
+        </label>
         <input
           type="range"
           id="hitsCount"
@@ -36,13 +40,31 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Watch, Vue } from "vue-property-decorator";
 
 @Component({
   name: "",
   components: {}
 })
-export default class Menu extends Vue {}
+export default class Menu extends Vue {
+  size: number | null = null;
+  hitsCount: number | null = null;
+
+  created() {
+    this.size = (this.$storage.get("size") as number) || 10;
+    this.hitsCount = (this.$storage.get("hitsCount") as number) || 100;
+  }
+
+  @Watch("size")
+  onSizeChange(value: number) {
+    this.$storage.set("size", value);
+  }
+
+  @Watch("hitsCount")
+  onHitsCountChange(value: number) {
+    this.$storage.set("hitsCount", value);
+  }
+}
 </script>
 
 <style lang="scss" scoped>

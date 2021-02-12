@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import WpMenu from "@/Components/Interface/Menu/MenuComponent.vue";
 
 @Component({
@@ -18,23 +18,5 @@ import WpMenu from "@/Components/Interface/Menu/MenuComponent.vue";
     WpMenu
   }
 })
-export default class Index extends Vue {
-  size: number | null = null;
-  hitsCount: number | null = null;
-
-  created() {
-    this.size = (this.$storage.get("size") as number) || 10;
-    this.hitsCount = (this.$storage.get("hitsCount") as number) || 100;
-  }
-
-  @Watch("size")
-  onSizeChange(value: number) {
-    this.$storage.set("size", value);
-  }
-
-  @Watch("hitsCount")
-  onHitsCountChange(value: number) {
-    this.$storage.set("hitsCount", value);
-  }
-}
+export default class Index extends Vue {}
 </script>

@@ -1,6 +1,13 @@
 <template>
   <div class="game-modal">
-    <div class="s6"></div>
+    <div class="s6">
+      <div class="collection">
+        <div class="collection-item">
+          <slot></slot>
+        </div>
+        <slot name="footer"></slot>
+      </div>
+    </div>
   </div>
 </template>
 

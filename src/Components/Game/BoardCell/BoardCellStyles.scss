@@ -1,8 +1,8 @@
 @mixin skeleton {
   .boardCell {
     position: relative;
-    width: 7vw;
-    height: 7vw;
+    width: 3vw;
+    height: 3vw;
     border: 1px solid;
   }
 }
@@ -17,18 +17,30 @@
 
     &--missed {
       background-color: grey;
+      &:focus {
+        background-color: grey;
+      }
     }
 
     &--occupied {
-      background-color: wheat;
+      background-color: white;
+      @at-root .cheating & {
+        background-color: wheat;
+      }
     }
 
     &--hit {
       background-color: red;
+      &:focus {
+        background-color: red;
+      }
     }
 
     &--destroyed {
       background-color: black;
+      &:focus {
+        background-color: black;
+      }
     }
 
     &:hover {

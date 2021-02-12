@@ -1,5 +1,12 @@
 <template>
-  <div class="game-container row">
+  <div class="game-container row" :class="{ cheating }">
+    <wp-modal v-if="activeMessageType">
+      {{ modalMessages[activeMessageType] }}
+      <div slot="footer" class="collection-item">
+        <router-link class="btn" to="/stats">Przejdź do wyników</router-link>
+      </div>
+    </wp-modal>
+
     <div class="col s9">
       <div class="collection">
         <div class="collection-item">
@@ -12,33 +19,19 @@
         </div>
       </div>
     </div>
+
     <div class="col s3">
-      <ul class="collection with-header">
-        <li class="collection-header">
-          <h4>Wynik</h4>
-        </li>
-        <li class="collection-item">
-          <b>Dostępne ruchy:</b> {{ hitsRemaining }}
-        </li>
-        <li class="collection-item">
-          <b>Zdobyte punkty:</b> {{ shipsPartsDestroyed }}
-        </li>
-        <li class="collection-item">
-          <b>Pozostałe statki:</b> {{ shipsRemaining }}
-        </li>
-        <li class="collection-header">
-          <h4>Akcje</h4>
-        </li>
-        <li class="collection-item">
-          <button class="btn" @click="clearBoard">Clear</button>
-        </li>
-        <li class="collection-item">
-          <button class="btn" @click="generateShips">Generate ships</button>
-        </li>
-        <li class="collection-item">
-          <button class="btn" @click="restart">Restart</button>
-        </li>
-      </ul>
+      <wp-sidebar
+        v-bind="{
+          hitsRemaining,
+          shipsPartsDestroyed,
+          shipsRemaining,
+          cheating
+        }"
+        @restart="restart"
+        @toggleCheating="toggleCheating"
+        @back="back"
+      ></wp-sidebar>
     </div>
   </div>
 </template>
@@ -51,6 +44,7 @@ import { Component, Prop } from "vue-property-decorator";
 import BoardCell from "@/Models/Interfaces/BoardCellInterface";
 import BoardCellState from "@/Models/Enums/BoardCellState";
 import Ship, { ShipPart } from "@/Models/Classes/Ship";
+import { StorageItem } from "@/Models/Interfaces/StoragePluginInterface";
 
 // Mixins imports
 import { mixins } from "vue-class-component";
@@ -75,11 +69,15 @@ import { ShipsGeneratorMixin } from "@/Mixins/ShipsGeneratorMixin";
 
 // Components imports
 import WpBoardCell from "@/Components/Game/BoardCell/BoardCellComponent.vue";
+import WpModal from "@/Components/Interface/Modal/ModalComponent.vue";
+import WpSidebar from "@/Components/Interface/Sidebar/SidebarComponent.vue";
 
 @Component({
   name: "BoardComponent",
   components: {
-    WpBoardCell
+    WpBoardCell,
+    WpModal,
+    WpSidebar
   }
 })
 export default class Board extends mixins(
@@ -87,6 +85,15 @@ export default class Board extends mixins(
   ShipsGeneratorMixin
 ) {
   @Prop() readonly hitsCount!: number;
+
+  modalMessages = {
+    failure:
+      "Przegrana! Nie udało się zniszczyć wszystkich statków w podanej liczbie ruchów :(",
+    success: "Wygrana! Dobrze poszło ;)"
+  };
+  activeMessageType: "success" | "failure" | null = null;
+  cheating = false;
+  cheatEnabledAtLeastOnce = false;
 
   board: BoardCell[] = [];
   ships: Ship[] = [];
@@ -114,6 +121,7 @@ export default class Board extends mixins(
     this.generateShips(this.board);
   }
 
+  // Main board methods
   clearBoard(): void {
     this.ships.splice(0, this.ships.length);
     this.board.forEach((cell: BoardCell) => {
@@ -125,15 +133,27 @@ export default class Board extends mixins(
     this.clearBoard();
     this.generateShips(this.board);
     this.hitsRemaining = this.hitsCount;
+    this.activeMessageType = null;
   }
 
+  back(): void {
+    this.restart();
+    this.$router.replace("/");
+  }
+
+  toggleCheating(): void {
+    this.cheatEnabledAtLeastOnce = true;
+    this.cheating = !this.cheating;
+  }
+
+  // User hit ship or ship part
   hit(cell: BoardCell) {
     const cellEmptyOrOccupied: boolean = [
       BoardCellState.EMPTY,
       BoardCellState.OCCUPIED
     ].includes(cell.state);
 
-    if (cellEmptyOrOccupied) {
+    if (this.hitsRemaining > 0 && cellEmptyOrOccupied) {
       if (cell.state === BoardCellState.EMPTY) {
         this.hitsRemaining--;
         cell.state = BoardCellState.MISSED;
@@ -148,7 +168,7 @@ export default class Board extends mixins(
           if (isShipDestroyed) {
             this._destroyShip(ship, shipPartsCells);
             const allShipsDestroyed = this.shipsRemaining === 0;
-            if (allShipsDestroyed) {
+            if (allShipsDestroyed && this.hitsRemaining > 0) {
               this._endGame();
             }
           }
@@ -205,7 +225,33 @@ export default class Board extends mixins(
     const allShipsDestroyed: boolean = this.shipsRemaining === 0;
 
     if (allShipsDestroyed) {
+      this.activeMessageType = "success";
+    } else {
+      this.activeMessageType = "failure";
     }
+
+    this._pushStats();
+  }
+
+  private _pushStats(): void {
+    const currentStats: StorageItem = {
+      type: this.activeMessageType,
+      hitsCount: this.hitsCount,
+      hitsRemaining: this.hitsRemaining,
+      shipsPartsDestroyed: this.shipsPartsDestroyed,
+      shipsRemaining: this.shipsRemaining,
+      date: new Date(),
+      cheating: this.cheating
+    };
+
+    const allStats: StorageItem[] =
+      (this.$storage.get("stats") as StorageItem[]) || [];
+
+    allStats.unshift(currentStats);
+    if (allStats.length > 10) {
+      allStats.pop();
+    }
+    this.$storage.set("stats", allStats);
   }
 }
 </script>

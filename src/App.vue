@@ -19,8 +19,6 @@ export default class App extends Vue {}
 </script>
 
 <style lang="scss">
-@import "ress";
-
 .app {
   display: flex;
   flex-direction: column;
