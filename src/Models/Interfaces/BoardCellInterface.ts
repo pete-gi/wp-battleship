@@ -1,7 +1,7 @@
-import BoardCellState from "../Enums/BoardCellStateEnum";
+import BoardCellState from "../Enums/BoardCellState";
 
-export default interface BoardCellInterface {
+export default interface BoardCell {
   x: number;
   y: number;
-  state: BoardCellState
+  state: BoardCellState;
 }

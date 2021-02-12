@@ -1,7 +1,42 @@
 @mixin skeleton {
-
+  .boardCell {
+    position: relative;
+    width: 7vw;
+    height: 7vw;
+    border: 1px solid;
+  }
 }
 
 @mixin visuals {
+  .boardCell {
+    border-color: black;
 
+    &--empty {
+      background-color: white;
+    }
+
+    &--missed {
+      background-color: grey;
+    }
+
+    &--occupied {
+      background-color: wheat;
+    }
+
+    &--hit {
+      background-color: red;
+    }
+
+    &--destroyed {
+      background-color: black;
+    }
+
+    &:hover {
+      border-width: 0.3em;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
 }

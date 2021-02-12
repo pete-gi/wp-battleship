@@ -1,7 +1,8 @@
 import Vue from "vue";
 import App from "./App.vue";
 import StoragePlugin from "./Plugins/StoragePlugin";
-import router from "./router";
+import router from "./Router";
+import "materialize-css/dist/css/materialize.min.css";
 
 Vue.config.productionTip = false;
 

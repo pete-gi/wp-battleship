@@ -1,18 +1,27 @@
 <template>
-  <div class="boardCell"></div>
+  <button
+    class="boardCell"
+    :class="`boardCell--${state}`"
+    @click="$emit('hit')"
+  >
+    <slot></slot>
+  </button>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import BoardCellState from "@/Models/Enums/BoardCellState";
+import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component({
-  name: "",
-  components: {},
+  name: "BoardCellComponent",
+  components: {}
 })
-export default class Board extends Vue {}
+export default class BoardCell extends Vue {
+  @Prop() readonly state!: BoardCellState;
+}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @use './BoardCellStyles' as BoardCellMixin;
 
 @include BoardCellMixin.skeleton;

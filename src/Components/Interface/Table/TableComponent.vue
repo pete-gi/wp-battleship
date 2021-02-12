@@ -7,7 +7,7 @@ import { Component, Vue } from "vue-property-decorator";
 
 @Component({
   name: "",
-  components: {},
+  components: {}
 })
 export default class Table extends Vue {}
 </script>

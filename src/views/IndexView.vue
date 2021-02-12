@@ -1,64 +1,40 @@
 <template>
   <div class="view">
-    <nav class="menu">
-      <form>
-        <div class="field">
-          <label for="width" class="field__label"> Liczba pól w osi X </label>
-          <input
-            type="slider"
-            id="width"
-            name="width"
-            class="field__input"
-            min="0"
-            max="20"
-            v-model="width"
-          />
-        </div>
-        <div class="field">
-          <label for="width" class="field__label"> Liczba pól w osi X </label>
-          <input
-            type="slider"
-            id="height"
-            name="height"
-            class="field__input"
-            min="0"
-            max="20"
-            v-model="width"
-          />
-        </div>
-      </form>
-      <router-link to="/play">Graj</router-link>
-      <router-link to="/stats">Statystyki</router-link>
-    </nav>
+    <div class="row">
+      <div class="col s6 offset-s3">
+        <wp-menu></wp-menu>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
+import WpMenu from "@/Components/Interface/Menu/MenuComponent.vue";
 
 @Component({
-  name: "IndexView"
+  name: "IndexView",
+  components: {
+    WpMenu
+  }
 })
 export default class Index extends Vue {
-  beforeCreate() {
-    this.width = 10;
-    this.height = 10;
+  size: number | null = null;
+  hitsCount: number | null = null;
+
+  created() {
+    this.size = (this.$storage.get("size") as number) || 10;
+    this.hitsCount = (this.$storage.get("hitsCount") as number) || 100;
   }
 
-  get width(): number {
-    const value: number = this.$storage.get("width") as number;
-    return value;
-  }
-  set width(value: number) {
-    this.$storage.set("width", value);
+  @Watch("size")
+  onSizeChange(value: number) {
+    this.$storage.set("size", value);
   }
 
-  get height(): number {
-    const value: number = this.$storage.get("height") as number;
-    return value;
-  }
-  set height(value: number) {
-    this.$storage.set("height", value);
+  @Watch("hitsCount")
+  onHitsCountChange(value: number) {
+    this.$storage.set("hitsCount", value);
   }
 }
 </script>

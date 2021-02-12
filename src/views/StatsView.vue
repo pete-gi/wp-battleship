@@ -7,7 +7,7 @@ import { Component, Vue } from "vue-property-decorator";
 
 @Component({
   name: "StatsView",
-  components: {},
+  components: {}
 })
 export default class Stats extends Vue {}
 </script>

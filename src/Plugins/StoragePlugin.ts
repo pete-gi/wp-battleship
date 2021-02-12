@@ -4,6 +4,7 @@ import StoragePlugin, {
 import { VueConstructor } from "vue/types/umd";
 
 const Storage: StoragePlugin = {
+  keys: [],
   /**
    * Pobiera wartość z LocalStorage, po drodze zmieniając odpowiednio jej typ
    * @method get
@@ -11,7 +12,7 @@ const Storage: StoragePlugin = {
    * @returns {StorageItem | null}
    */
   get: function(key: string): StorageItem | null {
-    const rawValue: string | null = localStorage.getItem(key);
+    const rawValue: string | null = localStorage.getItem(`wp-${key}`);
     if (rawValue !== null) {
       const parsedValue = this.fromString(rawValue);
       if (parsedValue) {
@@ -30,7 +31,31 @@ const Storage: StoragePlugin = {
    */
   set: function(key: string, value: StorageItem): void {
     const stringValue = this.toString(value);
-    localStorage.setItem(key, stringValue);
+    localStorage.setItem(`wp-${key}`, stringValue);
+    if (!this.keys.includes(key)) {
+      this.keys.push(key);
+    }
+  },
+
+  /**
+   * Usuwa wartość z LocalStorage
+   * @method delete
+   * @param {string} key
+   */
+  delete(key: string): void {
+    if (this.get(key)) {
+      localStorage.removeItem(`wp-${key}`);
+      const keyIndex: number = this.keys.findIndex(
+        (storedKey: string) => storedKey === key
+      );
+      this.keys.splice(keyIndex, 1);
+    }
+  },
+
+  clear: function(): void {
+    this.keys.forEach((key: string) => {
+      this.delete(key);
+    });
   },
 
   /**

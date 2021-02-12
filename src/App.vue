@@ -1,6 +1,11 @@
 <template>
-  <div id="app" class="app">
-    <router-view />
+  <div id="app" class="app row">
+    <header>
+      <h1 class="center-align">WP-Battleships</h1>
+    </header>
+    <main class="col s12">
+      <router-view />
+    </main>
   </div>
 </template>
 

@@ -1,6 +1,6 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import IndexView from "../views/IndexView.vue";
+import IndexView from "@/Views/IndexView.vue";
 
 Vue.use(VueRouter);
 
@@ -14,13 +14,13 @@ const routes: Array<RouteConfig> = [
     path: "/play",
     name: "play",
     component: () =>
-      import(/* webpackChunkName: "play" */ "../views/PlayView.vue")
+      import(/* webpackChunkName: "play" */ "@/Views/PlayView.vue")
   },
   {
     path: "/stats",
     name: "stats",
     component: () =>
-      import(/* webpackChunkName: "stats" */ "../views/StatsView.vue")
+      import(/* webpackChunkName: "stats" */ "@/Views/StatsView.vue")
   }
 ];
 
